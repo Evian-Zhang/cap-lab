@@ -100,6 +100,8 @@ async fn main() -> std::io::Result<()> {
                 web::post().to(temporarily_reclaim),
             )
     })
+    .workers(1)
+    .worker_max_blocking_threads(1)
     .bind(("localhost", DAEMON_PORT))?
     .run()
     .await

@@ -70,6 +70,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             let request = Request::builder()
                 .method(Method::POST)
                 .uri(PERMANENTLY_REMOVE_URI)
+                .header("Content-Type", "application/json")
                 .body(Body::from(
                     serde_json::to_string(&PermanentlyRemoveRequest { capability }).unwrap(),
                 ))?;
