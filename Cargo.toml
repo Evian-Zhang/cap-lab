@@ -1,2 +1,2 @@
 [workspace]
-members = ['cap-lab-daemon', 'cap-lab-client']
+members = ['cap-lab-daemon', 'cap-lab-client', 'cap-lab-interface']

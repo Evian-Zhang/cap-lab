@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+cap-lab-interface = { path = "../cap-lab-interface" }
 structopt = "0.3"
 hyper = { version = "0.14", features = ["full"] }
 tokio = { version = "1", features = ["full"] }
+const_format = "0.2"
+serde_json = "1"
