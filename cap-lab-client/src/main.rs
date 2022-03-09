@@ -11,11 +11,10 @@ use hyper::{
 use structopt::StructOpt;
 
 const BASE_URI: &'static str = formatcp!("http://localhost:{}", DAEMON_PORT);
-const EXECUTE_URI: &'static str = formatcp!("{}/{}", BASE_URI, EXECUTE_PATH);
-const PERMANENTLY_REMOVE_URI: &'static str = formatcp!("{}/{}", BASE_URI, PERMANENTLY_REMOVE_PATH);
-const TEMPORARILY_REMOVE_URI: &'static str = formatcp!("{}/{}", BASE_URI, TEMPORARILY_REMOVE_PATH);
-const TEMPORARILY_RECALIM_URI: &'static str =
-    formatcp!("{}/{}", BASE_URI, TEMPORARILY_RECALIM_PATH);
+const EXECUTE_URI: &'static str = formatcp!("{}{}", BASE_URI, EXECUTE_PATH);
+const PERMANENTLY_REMOVE_URI: &'static str = formatcp!("{}{}", BASE_URI, PERMANENTLY_REMOVE_PATH);
+const TEMPORARILY_REMOVE_URI: &'static str = formatcp!("{}{}", BASE_URI, TEMPORARILY_REMOVE_PATH);
+const TEMPORARILY_RECALIM_URI: &'static str = formatcp!("{}{}", BASE_URI, TEMPORARILY_RECALIM_PATH);
 
 /// Client to control capabilities
 #[derive(StructOpt)]
@@ -51,6 +50,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             let request = Request::builder()
                 .method(Method::POST)
                 .uri(EXECUTE_URI)
+                .header("Content-Type", "application/json")
                 .body(Body::from(
                     serde_json::to_string(&ExecuteRequest { command }).unwrap(),
                 ))?;
@@ -76,42 +76,44 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             let response_body = body::aggregate(client.request(request).await?.into_body()).await?;
             let capability_response: CapabilityResponse =
                 serde_json::from_reader(response_body.reader()).unwrap();
-            if capability_response.is_ok {
-                println!("Successfully modify capability.");
+            if let Some(error) = capability_response.has_error {
+                println!("Failed to modify capability: {}", error);
             } else {
-                println!("Failed to modify capability.");
+                println!("Successfully modify capability.");
             }
         }
         CapLabClient::TemporarilyRemove { capability } => {
             let request = Request::builder()
                 .method(Method::POST)
                 .uri(TEMPORARILY_REMOVE_URI)
+                .header("Content-Type", "application/json")
                 .body(Body::from(
                     serde_json::to_string(&TemporarilyRemoveRequest { capability }).unwrap(),
                 ))?;
             let response_body = body::aggregate(client.request(request).await?.into_body()).await?;
             let capability_response: CapabilityResponse =
                 serde_json::from_reader(response_body.reader()).unwrap();
-            if capability_response.is_ok {
-                println!("Successfully modify capability.");
+            if let Some(error) = capability_response.has_error {
+                println!("Failed to modify capability: {}", error);
             } else {
-                println!("Failed to modify capability.");
+                println!("Successfully modify capability.");
             }
         }
         CapLabClient::TemporarilyReclaim { capability } => {
             let request = Request::builder()
                 .method(Method::POST)
                 .uri(TEMPORARILY_RECALIM_URI)
+                .header("Content-Type", "application/json")
                 .body(Body::from(
                     serde_json::to_string(&TemporarilyReclaimRequest { capability }).unwrap(),
                 ))?;
             let response_body = body::aggregate(client.request(request).await?.into_body()).await?;
             let capability_response: CapabilityResponse =
                 serde_json::from_reader(response_body.reader()).unwrap();
-            if capability_response.is_ok {
-                println!("Successfully modify capability.");
+            if let Some(error) = capability_response.has_error {
+                println!("Failed to modify capability: {}", error);
             } else {
-                println!("Failed to modify capability.");
+                println!("Successfully modify capability.");
             }
         }
     }
