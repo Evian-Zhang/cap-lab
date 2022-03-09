@@ -38,6 +38,16 @@ async fn permanently_remove(
             });
         }
     };
+    if let Err(error) = caps::drop(None, CapSet::Inheritable, capability) {
+        return web::Json(CapabilityResponse {
+            has_error: Some(format!("{}", error)),
+        });
+    }
+    if let Err(error) = caps::drop(None, CapSet::Effective, capability) {
+        return web::Json(CapabilityResponse {
+            has_error: Some(format!("{}", error)),
+        });
+    }
     if let Err(error) = caps::drop(None, CapSet::Permitted, capability) {
         return web::Json(CapabilityResponse {
             has_error: Some(format!("{}", error)),
